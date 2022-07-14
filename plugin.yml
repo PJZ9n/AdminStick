@@ -2,3 +2,14 @@ name: AdminStick
 version: 0.0.1
 main: pjz9n\adminstick\Main
 api: 4.0.0
+commands:
+  adminstick:
+    description: Give the adminstick!
+    permission: pjz9n.adminstick.command.adminstick
+    aliases:
+      - as
+permissions:
+  pjz9n.adminstick.command.adminstick:
+    default: op
+  pjz9n.adminstick.stick.use:
+    default: op

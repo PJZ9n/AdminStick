@@ -23,8 +23,50 @@ declare(strict_types=1);
 
 namespace pjz9n\adminstick;
 
+use pjz9n\adminstick\form\AdminStickMenu;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerItemUseEvent;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\TextFormat;
 
-class Main extends PluginBase
+class Main extends PluginBase implements Listener
 {
+    public const ADMIN_STICK_NAME = TextFormat::BOLD . TextFormat::YELLOW . "ADMIN STICK";
+
+    public static function createAdminStick(): Item
+    {
+        return VanillaItems::STICK()->setCustomName(self::ADMIN_STICK_NAME);
+    }
+
+    public function onCommand(CommandSender $sender, Command $command, string $label, array $args): bool
+    {
+        if (!($sender instanceof Player)) {
+            $sender->sendMessage(TextFormat::RED . "Run this command from within the game");
+            return true;
+        }
+        $sender->getInventory()->addItem(self::createAdminStick());
+        $sender->sendMessage(TextFormat::AQUA . "You got the AdminStick!");
+        return true;
+    }
+
+    public function onUseAdminStick(PlayerItemUseEvent $event): void
+    {
+        $player = $event->getPlayer();
+        $inventory = $player->getInventory();
+        if ($inventory->getItemInHand()->getCustomName() === TextFormat::BOLD . TextFormat::YELLOW . "ADMIN STICK") {
+            if ($player->hasPermission("pjz9n.adminstick.stick.use")) {
+                $player->sendForm(new AdminStickMenu());
+            }
+        }
+    }
+
+    protected function onEnable(): void
+    {
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
 }
